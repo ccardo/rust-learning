@@ -1,2 +1,3 @@
-# rust-project
-my Rust learning experience
+# rust-learning
+my Rust learning process and experience.
+Will contain small .rs files.
