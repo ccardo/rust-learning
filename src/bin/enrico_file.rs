@@ -3,10 +3,10 @@ use std::io;
 fn main() {
 
     let mut _contents = String::new();
-    let mut chapters_left: i32 = 9;
-    println!("There are {chapters_left} chapters left");
+    let mut people_left: u32 = 7;
+    println!("There are {people_left} people left");
 
-    while 0 < chapters_left {
+    while 0 < people_left {
 
         let mut input = String::new();
 
@@ -19,7 +19,7 @@ fn main() {
             Err(_) => break,
         };
 
-        chapters_left -= input;
-        println!("\nThere are {chapters_left} chapters left.");
+        people_left += input as u32;
+        println!("\nThere are {people_left} people left.");
     };
 }
