@@ -3,7 +3,8 @@ use std::io::stdin;
 
 fn main() {
     println!("{};", addup_evens(2, 9));
-
+    println!("Please input an integer number: "); let x = 1000000;
+    
     let mut x = String::new();
     stdin().read_line(&mut x).expect("HEY");
 
@@ -12,7 +13,11 @@ fn main() {
     let prime = if is_prime(x as i128) { "" } else { "not " };
     println!("The number {} is {}prime.", x, prime);
 
-    println!("The number of primes up to {} is: {}", x, prime_sieve(x.try_into().unwrap()))
+    println!(
+        "The number of primes up to {} is: {}",
+        x,
+        prime_sieve(x.try_into().unwrap())
+    )
 }
 
 fn addup_evens(bottom: i32, top: i32) -> i32 {
