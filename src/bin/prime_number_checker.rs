@@ -3,7 +3,7 @@ use std::io::stdin;
 
 fn main() {
     println!("{};", addup_evens(2, 9));
-    println!("Please input an integer number: "); let x = 1000000;
+    println!("Please input an integer number: ");
     
     let mut x = String::new();
     stdin().read_line(&mut x).expect("HEY");
