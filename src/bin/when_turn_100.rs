@@ -1,4 +1,4 @@
-use std::{io::{self, Write}, fmt::Error};
+use std::io::{self, Write};
 use chrono::{self, Utc, Datelike};
 
 fn main() {
