@@ -1,30 +1,30 @@
-use std::io::stdin;
+use std::io;
 
 fn main() {
   let mut input = String::new();
   println!("Please input an integer: ");
-  stdin().read_line(&mut input).expect("Failed to read line.");
+  io::stdin().read_line(&mut input).expect("Failed to read line.");
   let x = input.trim().parse::<u32>().unwrap();
 
   for num in 0..x {
-    if armstrong_number(num) {
+    if armstrong_number(num).unwrap() {
       println!("{}", num)
     }
   }
 }
 
-fn armstrong_number(number: u32) -> bool {
+fn armstrong_number(number: u32) -> Option<bool> {
   let number_string = number.to_string();
 
   let mut sum: u32 = 0;
   for char in number_string.chars() {
-    let digit = char.to_digit(10).expect("Failed to convert into an int.");
+    let digit = char.to_digit(10)?;
     sum += digit.pow(number_string.len().try_into().unwrap());
-    
-    if sum > number { return false }
+  
+    if sum > number { return Some(false) }
   }
   
   if sum == number {
-    true
-  } else { false }
+    Some(true)
+  } else { Some(false) }
 }
