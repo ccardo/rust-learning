@@ -15,7 +15,7 @@ fn main() {
   println!("You will turn 100 in {}", year_of_100)
 }
 
-fn input(message: &str) -> Result<String, std::io::Error> {
+fn input(message: &str) -> Result<String, io::Error> {
   print!("{}", message);
   io::stdout().flush()?;
 
