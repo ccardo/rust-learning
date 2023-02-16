@@ -17,19 +17,15 @@ fn main() {
             hand.clear()
         }
     }
+    for hand in hands {
+        let first_iter_hand = hand.into_iter();
+        let mut values = first_iter_hand.map(|x| x.value).collect_vec();
 
-    let first_hand = &hands[0];
-    let first_iter_hand = first_hand.into_iter();
-    let values = first_iter_hand.map(|x| x.value);
+        values.sort_by(|&a, b| a.cmp(b));
 
-    let mut binding = values.collect_vec();
-    binding.sort_by(|&a, b| a.cmp(b));
-
-    let result = match duplicati(&mut binding) {
-        Some(coppia) => coppia,
-        None => ""
-    };
-    println!("{}", result)
+        let result = duplicate_combinations(&mut values);
+        println!("{}", result)
+    }
 }
 
 struct Card {
@@ -41,7 +37,7 @@ fn create_deck() -> Vec<Card> {
     let mut deck: Vec<Card> = vec![];
 
     for suit in SUITS {
-        for value in 7..=14 {
+        for value in 8..=14 {
             let card: Card = Card {
                 suit: suit.to_owned(),
                 value,
@@ -56,25 +52,84 @@ fn shuffle_deck(deck: &mut Vec<Card>) -> () {
     deck.shuffle(&mut thread_rng())
 }
 
-fn duplicati(values: &mut Vec<i32>) -> Option<&str> {
+fn duplicate_combinations(values: &Vec<i32>) -> &str {
     let duplicates = values.into_iter().dedup_with_count().collect_vec();
 
-    for i in 2..=4 {
-        let boolean = if (&duplicates).into_iter()
-            .any(|x| x.0 == i) { true } else {false};
-
-        if boolean {
-            return match i {
-                4 => Some("Poker"),
-                3 => Some("Tris"),
-                2 => {return match duplicates.len() {
-                    4 => Some("Coppia"),
-                    3 => Some("Doppia Coppia"),
-                    2 => Some("Full Hand"),
-                    _ => None};}
-                _ => None
-            };
-        }
+    if four_of_a_kind(&duplicates) {
+        "Poker"
+    } else if straight(values) {
+        "Scala"
+    } else if full_house(&duplicates) {
+        "Full"
+    } else if three_of_a_kind(&duplicates) {
+        "Tris"
+    } else if double_two_of_a_kind(&duplicates) {
+        "Doppia coppia"
+    } else if two_of_a_kind(&duplicates) {
+        "Coppia"
+    } else {
+        "None"
     }
-    None
 }
+
+fn two_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+    if duplicate_values.into_iter().any(|x| x.0 == 2) {
+        true
+    } else {
+        false
+    }
+}
+
+fn double_two_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+    let length = duplicate_values.len();
+    if duplicate_values.into_iter().any(|x| x.0 == 2) {
+        if length == 3 {
+            true
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
+
+fn three_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+    if duplicate_values.into_iter().any(|x| x.0 == 3) {
+        true
+    } else {
+        false
+    }
+}
+
+fn full_house(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+    if two_of_a_kind(duplicate_values) {
+        if three_of_a_kind(duplicate_values) {
+            true
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
+
+fn four_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+    if duplicate_values.into_iter().any(|x| x.0 == 4) {
+        true
+    } else {
+        false
+    }
+}
+
+fn straight(values: &Vec<i32>) -> bool {
+    let min_card = values.iter().min().unwrap().to_owned();
+    let max_card = values.iter().max().unwrap().to_owned();
+    let range = min_card..max_card;
+    if values == &range.collect_vec() {
+        true
+    } else {
+        false
+    }
+}
+
+// complete code with: Flush, Royal Flush. Time how long it takes to get a royal flush.
