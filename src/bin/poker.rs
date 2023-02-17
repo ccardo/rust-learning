@@ -2,6 +2,7 @@ use itertools::{self, Itertools};
 use rand::{seq::SliceRandom, thread_rng};
 const SUITS: [&str; 4] = ["Hearts", "Diamonds", "Clubs", "Spades"];
 
+#[derive(Default)]
 #[derive(Debug)]
 pub struct Card {
     pub suit: String,
@@ -138,7 +139,7 @@ pub fn straight(values: &mut Vec<i32>) -> bool {
 
 pub fn flush(cards: &Vec<&Card>) -> bool {
     let card_suits = cards.into_iter().map(|&card| &card.suit);
-    if card_suits.dedup().count() == 0 {
+    if card_suits.dedup().count() == 1 {
         true
     } else {
         false

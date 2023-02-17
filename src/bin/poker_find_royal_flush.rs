@@ -1,10 +1,12 @@
 mod poker;
-use itertools::Itertools;
 use poker::{Card, create_deck, royal_flush, shuffle_deck};
 
 fn main() {
 
-  /* 'search:loop { */
+  let mut n: u32 = 1;
+  'search:loop {
+
+    n += 1;
     let mut deck = create_deck();
     shuffle_deck(&mut deck);
   
@@ -20,32 +22,11 @@ fn main() {
       }
     }
 
-    let card1 = Card { suit: "Diamonds".to_string(), value: 14 };
-    let card2 = Card { suit: "Diamonds".to_string(), value: 13 };
-    let card3 = Card { suit: "Diamonds".to_string(), value: 11 };
-    let card4 = Card { suit: "Diamonds".to_string(), value: 12 };
-    let card5 = Card { suit: "Diamonds".to_string(), value: 10 };
-    let mut germano = vec![
-    &card1,
-    &card2,
-    &card3,
-    &card4,
-    &card5,
-    ];
-    
-    let mut ohoho = germano.iter().map(|x| x.value).collect_vec();
-    let result = royal_flush(&mut germano);
-
-    println!("{}", result);
-
-    /*   let results = hands
-      .iter()
-      .map(|hand| royal_flush(hand))
-      .collect::<Vec<bool>>();
-
-      if results.iter().any(|&result| result) {
-        println!("Scala Reale");
+    for mut hand in hands {
+      if royal_flush(&mut hand) {
+        println!("Scala Reale! It took exactly {n} decks.");
         break 'search
-    } */
-  /* } */
+      }
+    }
+  }
 }
