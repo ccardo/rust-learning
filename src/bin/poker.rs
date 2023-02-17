@@ -2,6 +2,11 @@ use itertools::{self, Itertools};
 use rand::{seq::SliceRandom, thread_rng};
 const SUITS: [&str; 4] = ["Hearts", "Diamonds", "Clubs", "Spades"];
 
+#[derive(Debug)]
+pub struct Card {
+    pub suit: String,
+    pub value: i32,
+}
 fn main() {
     let mut my_deck = create_deck();
     shuffle_deck(&mut my_deck);
@@ -17,23 +22,13 @@ fn main() {
             hand.clear()
         }
     }
-    for hand in hands {
-        let first_iter_hand = hand.into_iter();
-        let mut values = first_iter_hand.map(|x| x.value).collect_vec();
-
-        values.sort_by(|&a, b| a.cmp(b));
-
-        let result = duplicate_combinations(&mut values);
+    for mut hand in hands {
+        let result = combinations(&mut hand);
         println!("{}", result)
     }
 }
 
-struct Card {
-    suit: String,
-    value: i32,
-}
-
-fn create_deck() -> Vec<Card> {
+pub fn create_deck() -> Vec<Card> {
     let mut deck: Vec<Card> = vec![];
 
     for suit in SUITS {
@@ -48,16 +43,23 @@ fn create_deck() -> Vec<Card> {
     deck
 }
 
-fn shuffle_deck(deck: &mut Vec<Card>) -> () {
+pub fn shuffle_deck(deck: &mut Vec<Card>) -> () {
     deck.shuffle(&mut thread_rng())
 }
 
-fn duplicate_combinations(values: &Vec<i32>) -> &str {
-    let duplicates = values.into_iter().dedup_with_count().collect_vec();
+fn combinations(cards: &mut Vec<&Card>) -> String {
+    let mut values = cards.into_iter().map(|x| x.value).collect_vec();
+    values.sort_by(|&a, b| a.cmp(b)); 
+    let mut cloned_values = values.clone();
+    let duplicates = (values).into_iter().dedup_with_count().collect_vec();
 
-    if four_of_a_kind(&duplicates) {
+    let result = if royal_flush(cards){
+        "Scala Reale"
+    } else if four_of_a_kind(&duplicates) {
         "Poker"
-    } else if straight(values) {
+    } else if flush(&cards){
+        "Colore"
+    } else if straight(&mut cloned_values) {
         "Scala"
     } else if full_house(&duplicates) {
         "Full"
@@ -69,10 +71,11 @@ fn duplicate_combinations(values: &Vec<i32>) -> &str {
         "Coppia"
     } else {
         "None"
-    }
+    };
+    result.to_owned()
 }
 
-fn two_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+pub fn two_of_a_kind(duplicate_values: &Vec<(usize, i32)>) -> bool {
     if duplicate_values.into_iter().any(|x| x.0 == 2) {
         true
     } else {
@@ -80,7 +83,7 @@ fn two_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
     }
 }
 
-fn double_two_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+pub fn double_two_of_a_kind(duplicate_values: &Vec<(usize, i32)>) -> bool {
     let length = duplicate_values.len();
     if duplicate_values.into_iter().any(|x| x.0 == 2) {
         if length == 3 {
@@ -93,7 +96,7 @@ fn double_two_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
     }
 }
 
-fn three_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+pub fn three_of_a_kind(duplicate_values: &Vec<(usize, i32)>) -> bool {
     if duplicate_values.into_iter().any(|x| x.0 == 3) {
         true
     } else {
@@ -101,7 +104,7 @@ fn three_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
     }
 }
 
-fn full_house(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+pub fn full_house(duplicate_values: &Vec<(usize, i32)>) -> bool {
     if two_of_a_kind(duplicate_values) {
         if three_of_a_kind(duplicate_values) {
             true
@@ -113,7 +116,7 @@ fn full_house(duplicate_values: &Vec<(usize, &i32)>) -> bool {
     }
 }
 
-fn four_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
+pub fn four_of_a_kind(duplicate_values: &Vec<(usize, i32)>) -> bool {
     if duplicate_values.into_iter().any(|x| x.0 == 4) {
         true
     } else {
@@ -121,10 +124,11 @@ fn four_of_a_kind(duplicate_values: &Vec<(usize, &i32)>) -> bool {
     }
 }
 
-fn straight(values: &Vec<i32>) -> bool {
+pub fn straight(values: &mut Vec<i32>) -> bool {
     let min_card = values.iter().min().unwrap().to_owned();
     let max_card = values.iter().max().unwrap().to_owned();
-    let range = min_card..max_card;
+    let range = min_card..=max_card;
+    values.sort_by(|a, b| a.cmp(&b));
     if values == &range.collect_vec() {
         true
     } else {
@@ -132,4 +136,23 @@ fn straight(values: &Vec<i32>) -> bool {
     }
 }
 
-// complete code with: Flush, Royal Flush. Time how long it takes to get a royal flush.
+pub fn flush(cards: &Vec<&Card>) -> bool {
+    let card_suits = cards.into_iter().map(|&card| &card.suit);
+    if card_suits.dedup().count() == 0 {
+        true
+    } else {
+        false
+    }
+}
+
+pub fn royal_flush(cards: &mut Vec<&Card>) -> bool {
+    if flush(cards) {
+        if straight(&mut cards.into_iter().map(|card| card.value).collect_vec()) {
+            true
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
