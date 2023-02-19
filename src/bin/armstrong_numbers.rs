@@ -5,12 +5,15 @@ fn main() {
   println!("Please input an integer: ");
   io::stdin().read_line(&mut input).expect("Failed to read line.");
   let x = input.trim().parse::<u32>().unwrap();
-
+  let mut n = 1;
+  
   for num in 0..x {
     if armstrong_number(num).unwrap() {
-      println!("{}", num)
+      println!("{}", num);
+      n += 1;
     }
   }
+  println!("There are a total of {n} Armstrong numbers up to {x}.")
 }
 
 fn armstrong_number(number: u32) -> Option<bool> {
