@@ -2,8 +2,7 @@ use itertools::{self, Itertools};
 use rand::{seq::SliceRandom, thread_rng};
 const SUITS: [&str; 4] = ["Hearts", "Diamonds", "Clubs", "Spades"];
 
-#[derive(Default)]
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct Card {
     pub suit: String,
     pub value: i32,
@@ -50,15 +49,15 @@ pub fn shuffle_deck(deck: &mut Vec<Card>) -> () {
 
 fn combinations(cards: &mut Vec<&Card>) -> String {
     let mut values = cards.into_iter().map(|x| x.value).collect_vec();
-    values.sort_by(|&a, b| a.cmp(b)); 
+    values.sort_by(|&a, b| a.cmp(b));
     let mut cloned_values = values.clone();
     let duplicates = (values).into_iter().dedup_with_count().collect_vec();
 
-    let result = if royal_flush(cards){
+    let result = if royal_flush(cards) {
         "Scala Reale"
     } else if four_of_a_kind(&duplicates) {
         "Poker"
-    } else if flush(&cards){
+    } else if flush(&cards) {
         "Colore"
     } else if straight(&mut cloned_values, false) {
         "Scala"
@@ -132,9 +131,9 @@ pub fn straight(values: &mut Vec<i32>, royal: bool) -> bool {
     values.sort_by(|a, b| a.cmp(&b));
     if !royal {
         if values == &range.collect_vec() {
-        true
+            true
         } else {
-        false
+            false
         }
     } else {
         if values == &(10..=14).collect_vec() {
@@ -156,7 +155,10 @@ pub fn flush(cards: &Vec<&Card>) -> bool {
 
 pub fn royal_flush(cards: &mut Vec<&Card>) -> bool {
     if flush(cards) {
-        if straight(&mut cards.into_iter().map(|card| card.value).collect_vec(), true) {
+        if straight(
+            &mut cards.into_iter().map(|card| card.value).collect_vec(),
+            true,
+        ) {
             true
         } else {
             false
