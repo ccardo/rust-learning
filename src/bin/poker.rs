@@ -60,7 +60,7 @@ fn combinations(cards: &mut Vec<&Card>) -> String {
         "Poker"
     } else if flush(&cards){
         "Colore"
-    } else if straight(&mut cloned_values) {
+    } else if straight(&mut cloned_values, false) {
         "Scala"
     } else if full_house(&duplicates) {
         "Full"
@@ -125,15 +125,23 @@ pub fn four_of_a_kind(duplicate_values: &Vec<(usize, i32)>) -> bool {
     }
 }
 
-pub fn straight(values: &mut Vec<i32>) -> bool {
+pub fn straight(values: &mut Vec<i32>, royal: bool) -> bool {
     let min_card = values.iter().min().unwrap().to_owned();
     let max_card = values.iter().max().unwrap().to_owned();
     let range = min_card..=max_card;
     values.sort_by(|a, b| a.cmp(&b));
-    if values == &range.collect_vec() {
+    if !royal {
+        if values == &range.collect_vec() {
         true
-    } else {
+        } else {
         false
+        }
+    } else {
+        if values == &(10..=14).collect_vec() {
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -148,7 +156,7 @@ pub fn flush(cards: &Vec<&Card>) -> bool {
 
 pub fn royal_flush(cards: &mut Vec<&Card>) -> bool {
     if flush(cards) {
-        if straight(&mut cards.into_iter().map(|card| card.value).collect_vec()) {
+        if straight(&mut cards.into_iter().map(|card| card.value).collect_vec(), true) {
             true
         } else {
             false
