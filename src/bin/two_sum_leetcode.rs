@@ -1,15 +1,29 @@
-fn main() {
-    let x = solution(vec![1, 4, 5, 3, 7], 7).unwrap();
-    println!("{:?}", x)
+use std::collections::HashMap;
+
+
+pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+    // Create a hash map to store the difference between target and each number in nums
+    let mut hm = HashMap::with_capacity(nums.len());
+    for (i, &num) in nums.iter().enumerate() {
+        // Check if such a difference exists in the hash map
+        let xx = hm.get(&num).unwrap_or(&0);
+        println!("{}", xx);
+        match hm.get(&num) {
+            // If it does, return the indices of the current number and the number with the difference
+            Some(&j) => return vec![i as i32, j as i32],
+            // If it doesn't, add the difference between target and the current number to the hash map
+            None => {
+                hm.insert(target - num, i);
+            },
+        }
+    }
+    unreachable!();
 }
 
-fn solution(nums: Vec<i32>, target: i32) -> Option<Vec<i32>> {
+fn main() {
+    let arr = vec![5, 2, 7, 3, 9, 2];
+    let target = 8;
 
-    let mut soln: Vec<i32> = vec![];
-    for (i, x) in nums.iter().enumerate() {
-        if nums.contains(&(target - x)) {
-            soln = vec![*x, nums.iter().position(|&e| e == target - x).unwrap() as i32];
-        } else { return None; }
-    };
-    Some(soln)
+    let rasult = two_sum(arr, target);
+    println!("{:?}", rasult)
 }
